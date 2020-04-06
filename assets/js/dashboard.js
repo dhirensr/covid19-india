@@ -1,25 +1,23 @@
 function load_data(){
 	  $.ajax({
         type: "GET",
-        url: "http://127.0.0.1:5000/india/covid19-data"
+        url: "https://api.rootnet.in/covid19-in/stats/latest"
     }).done(function (res) {
-		    var tableHtml='';
-        var total = res.total;
-        var total_deaths = res.total_deaths;
-        var recovered = res.total_recovered;
-		    for (var i = 0; i < res.deaths.length; i++) {
-            var deaths = res.deaths[i];
-            var state = res.states[i];
-            var discharged = res.discharged[i];
-			      tableHtml += "<tr>"
-				        +"<td>"+ state +"</td>"
-                + "<td>"+ deaths+"</td>"
-				        +  "<td>"+ discharged +"</td>"
+        var totalDeaths = res.data.summary.deaths;
+        var totalRecovered = res.data.summary.discharged;
+        var total = res.data.summary.total;
+        var tableHtml='';
+        for (var i = 0; i < res.data.regional.length; i++){
+            tableHtml += "<tr>"
+				        +"<td>"+ res.data.regional[i].loc +"</td>"
+                + "<td>"+ res.data.regional[i].deaths +"</td>"
+				        +  "<td>"+ res.data.regional[i].discharged +"</td>"
                 + "</tr>";
+
         }
 		    $('#total_cases').html(total);
-        $('#deaths').html(total_deaths);
-        $('#recovered').html(recovered);
+        $('#deaths').html(totalDeaths);
+        $('#recovered').html(totalRecovered);
         $('#state_data tbody').html(tableHtml);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         document.getElementById('error_msg').innerHTML = jqXHR.responseText;

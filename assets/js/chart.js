@@ -522,10 +522,16 @@ $(function () {
 function renderChart(){
 	  $.ajax({
         type: "GET",
-        url: "http://127.0.0.1:5000/india/cases-per-state",
+        url: "https://api.rootnet.in/covid19-in/stats/latest",
     }).done(function (res) {
-        var data = res.count;
-        var labels = res.locations;
+        var locations = [];
+        var countPerLocation = [];
+        for (var i = 0; i < res.data.regional.length; i++){
+            locations.push(res.data.regional[i].loc);
+            countPerLocation.push(res.data.regional[i].confirmedCasesIndian + res.data.regional[i].confirmedCasesForeign );
+        }
+        var data = countPerLocation;
+        var labels = locations;
         var ctx = document.getElementById("barChart").getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'bar',
@@ -608,10 +614,17 @@ function renderChart(){
 function renderLineChart(){
 	  $.ajax({
         type: "GET",
-        url: "http://127.0.0.1:5000/india/cases-per-day",
+        url: "https://api.rootnet.in/covid19-in/stats/history",
     }).done(function (res) {
-        var data = res.count_per_day;
-        var labels = res.dates;
+        var dates = [];
+        var count_per_day = [];
+        for (var i = 0; i < res.data.length; i++){
+            dates.push(res.data[i].day);
+            count_per_day.push(res.data[i].summary.total);
+
+        }
+        var data = count_per_day;
+        var labels = dates;
         var ctx = document.getElementById("lineChart").getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'line',
@@ -686,11 +699,21 @@ function renderLineChart(){
 function renderLineChartPerState(state){
 	  $.ajax({
         type: "GET",
-        url: "http://127.0.0.1:5000/india/cases-per-day-per-state",
-        data: {"state" : state},
+        url: "https://api.rootnet.in/covid19-in/stats/history",
     }).done(function (res) {
-        var data = res.count_per_day;
-        var labels = res.dates;
+        var countPerDay = [];
+        var dates = [];
+        for (var i = 0; i < res.data.length; i++){
+            dates.push(res.data[i].day);
+            for (var j=0 ; j< res.data[i].regional.length;j++){
+                if(res.data[i].regional[j].loc == state){
+                    countPerDay.push(res.data[i].regional[j].confirmedCasesForeign + res.data[i].regional[j].confirmedCasesIndian);
+                }
+            }
+        }
+        console.log(state,countPerDay,dates);
+        var data = countPerDay;
+        var labels = dates;
         var ctx = document.getElementById("lineChartState").getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'line',

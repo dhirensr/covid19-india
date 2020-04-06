@@ -1,13 +1,13 @@
 function load_hospital_data(){
 	  $.ajax({
         type: "GET",
-        url: "http://127.0.0.1:5000/india/hospitals"
+        url: "https://api.rootnet.in/covid19-in/stats/hospitals"
     }).done(function (res) {
 		    var tableHtml='';
-		    for (var i = 0; i < res.hospitals.length; i++) {
-            var hospital = res.hospitals[i];
-            var state = res.states[i];
-            var beds = res.beds[i];
+		    for (var i = 0; i < res.data.regional.length; i++) {
+            var hospital = res.data.regional[i].totalHospitals;
+            var state = res.data.regional[i].state;
+            var beds = res.data.regional[i].totalBeds;
 			      tableHtml += "<tr>"
 				        +"<td>"+ state +"</td>"
                 + "<td>"+ beds+"</td>"
